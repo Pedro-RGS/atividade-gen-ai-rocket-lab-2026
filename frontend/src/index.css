@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #ccac6c;
+    --color-primary-hover: #b89a5f;
+  }
+
+  body {
+    @apply bg-[#0a0a0a] text-white;
+    margin: 0;
+    padding: 0;
+  }
+}
