@@ -20,12 +20,12 @@ class AnalystResult(BaseModel):
   baseada estritamente nas evidências encontradas no banco de dados.
   """
   conclusion: Annotated[str, MinLen(10)] = Field(
-      ..., description="""Conclusão textual e explicativa gerada a partir da análise dos
-        dados retornados, respondendo efetivamente a pergunta do usuário."""
+    ..., description="""Conclusão textual e explicativa gerada a partir da análise dos
+      dados retornados, respondendo efetivamente a pergunta do usuário."""
   )
 
 agent = Agent(
-  "google-gla:gemini-2.5-flash-lite",
+  "google-gla:gemini-2.5-flash",
   output_type=AnalystResult,
   deps_type=Deps,
   retries=3

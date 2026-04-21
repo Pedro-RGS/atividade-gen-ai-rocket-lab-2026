@@ -18,4 +18,4 @@ async def chat_with_ai(pergunta: str):
 
   result = await agent.run(pergunta, deps=Deps(db=db_manager))
 
-  return {"conclusion": result.data.conclusion}
+  return {"conclusion": result.output.conclusion}
