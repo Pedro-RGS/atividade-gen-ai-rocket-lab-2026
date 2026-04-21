@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { Header } from "../organisms/header";
 import { Footer } from "../atoms/custom-footer";
+import { AgentChat } from "../organisms/agent-chat";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ export const MainLayout = ({ children, onSearch }: MainLayoutProps) => {
 
       <main className="flex-1 w-full">{children}</main>
 
+      <AgentChat />
       <Footer />
     </div>
   );
