@@ -66,6 +66,7 @@ Um componente React com posição fixa (`fixed`) e expansível para que o usuár
 * Python 3.10+
 * Ambiente virtual (venv)
 * Chave de API do Google Gemini (configurada no arquivo .env)
+* Baixar o arquivo [banco.db](https://drive.google.com/drive/u/1/folders/1KEfA71b1WPmR8GMX1oChUkCEfKxLHH5c) e copiar ele para a pasta backend
 
 ### Passo a Passo
 1.  **Acesse o diretório:**
