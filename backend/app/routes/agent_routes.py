@@ -16,6 +16,9 @@ router = APIRouter(
 async def chat_with_ai(question: AgentRequestSchema):
   db_manager = DatabaseManager(db_path=DB_PATH)
 
-  result = await agent.run(question.question, deps=Deps(db=db_manager))
-
-  return {"conclusion": result.output.conclusion}
+  try:
+    result = await agent.run(question.question, deps=Deps(db=db_manager))
+    return {"conclusion": result.output.conclusion}
+  
+  finally:
+    db_manager.close_db()
