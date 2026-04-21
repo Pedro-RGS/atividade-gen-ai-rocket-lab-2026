@@ -1,15 +1,62 @@
-# Atividade Dev Rocket Lab 2026
-Esse repositório contém minha plataforma fullstack de compras online. Ela foi criada seguindo os requisitos passados pela Visagio no seu bootcamp Rocket Lab 2026
-e teve o design inspirado na [Fallen Store](https://www.fallenstore.com.br/), todos os créditos à eles por terem criado um design tão massa.
+# Atividade Gen Ai Rocket Lab 2026
+Esse repositório contém a integração entre a minha plataforma fullstack de compras online e meu agente de ia __Text-To-SQL__. O agente permite que o usuário faça perguntas em linguagem natural sobre o banco de dados e receba respostas baseadas em consultas SQL exeutadas em tempo real.
 
 ---
 
-## 🗄️ Estrutura do Repositório
-- `/backend`: API construída com FastAPI e SQLAlchemy.
+## 🛠️ Tecnologias Utilizadas
 
-- `/frontend`: Interface em React + Vite utilizando Tailwind CSS.
+### Backend (python)
+- **FastAPI**: Framework web de alta performance.
+- **Pydantic-AI**: Framework para criação de agentes com suporte a modelos estruturados (Gemini).
+- **Google Gemini 2.0 Flash**: O cérebro por trás da análise de dados.
+- **SQLite**: Banco de dados relacional para armazenamento das informações de e-commerce.
 
-- `/csv-database-files`: Conjunto de dados inicial para o povoamento do banco.
+### Frontend (TypeScript)
+- **React + TypeScript**: Base da interface.
+- **Tailwind CSS**: Estilização baseada em utilitários.
+- **Axios**: Cliente HTTP para comunicação com a API.
+- **Lucide React**: Conjunto de ícones minimalistas.
+  
+---
+
+## ❓ Onde está o agente no código?
+
+```
+📦 backend
+  ┣ 📂 app
+  ┃  ┣ 📂 agent
+  ┃  ┃  ┗ 📂 agents
+  ┃  ┃     ┣ 📜 agent.py -- Agente principal
+  ┃  ┃     ┗ 📜 judge_agent.py -- Agente secundário não utilizado
+  ┃  ┣ 📜 __init__.py
+  ┃   ┗ 📜 main.py -- Main para realização de testes rápidos
+  ...
+  ┣ 📂 utils
+     ┣ 📜 db.py -- Classe para auxiliar o agente a realizar as queryes
+     ...
+```
+
+---
+
+## 🏗️ Arquitetura do Sistema
+
+O projeto é dividido em dois grandes blocos: um agente inteligente que "fala" SQL e uma interface de chat flutuante.
+
+### O Agente (AI Engine)
+O agente utiliza o seguinte fluxo:
+
+1. Exploração: Lista e descreve tabelas para entender o schema.
+2. Validação: Busca valores únicos em colunas de status ou categorias antes de filtrar (evita erros de grafia).
+3. Execução: Gera e executa queries SQL seguras (apenas SELECT).
+4. Conclusão: Formata os dados retornados em uma resposta textual estruturada.
+
+### O Widget de Chat
+
+Um componente React com posição fixa (`fixed`) e expansível para que o usuário interaja:
+
+- Atualização Otimista: A mensagem do usuário aparece instantaneamente.
+- Feedback Visual: Indicador de "Processando..." enquanto a IA consulta o banco.
+- Design Responsivo: Adaptado para diferentes resoluções.
 
 ---
 
@@ -18,6 +65,7 @@ e teve o design inspirado na [Fallen Store](https://www.fallenstore.com.br/), to
 ### Pré-requisitos
 * Python 3.10+
 * Ambiente virtual (venv)
+* Chave de API do Google Gemini (configurada no arquivo .env)
 
 ### Passo a Passo
 1.  **Acesse o diretório:**
@@ -77,37 +125,30 @@ e teve o design inspirado na [Fallen Store](https://www.fallenstore.com.br/), to
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 📡 API Endpoints
 
-### Backend
-* **FastAPI:** Framework para aplicações web Python.
-* **SQLAlchemy:** ORM para manipulação do banco de dados.
-* **Alembic:** Gestão de migrações (configurado para Cascade Delete no SQLite).
-* **Pydantic:** Validação de dados e Schemas.
+### `POST /chat/`
+Endpoint para enviar uma pergunta para o analista de dados
 
-### Frontend
-* **React + Vite:** Desenvolvimento de interfaces interativas.
-* **Tailwind CSS:** Estilização baseada em utilitários.
-* **Axios:** Consumo de APIs com tratamento de paginação e filtros.
-* **TypeScript:** Tipagem estática para maior segurança no código.
+**Request Body:**
+```JSON
+{
+  "question": "Quais foram os 5 produtos mais vendidos no mês passado?"
+}
+```
 
----
-
-### ⚙️ Funcionalidades
-* Navegação entre todos os produtos com paginação
-* Ao clicar no produto é possível ver todas as informações dele (preço, medida, nota média, vendas, comentários, etc)
-* É possível pesquisar pelo nome e/ou pela categoria dos produtos
-* Edição de produtos
-* Criação de produtos novo
-* É possível deletar um produto da base de dados 
+**Response**
+```JSON
+{
+  "conclusion": "Os 5 produtos mais vendidos foram: 1. Teclado Pantera (50 unid), 2. Mouse Falcão (45 unid)..."
+}
+```
 
 ---
 
 ### 💡 Notas de Desenvolvimento
-* Para buscas de produtos, o frontend envia o parâmetro `nome` (ou `name`, conforme configurado na rota do FastAPI).
-* O banco SQLite foi configurado com `render_as_batch=True` no Alembic para permitir alterações de Constraints e Foreign Keys sem perda de dados.
-* Os produtos criados possuem preço 0 pois os valores dos produtos são baseados na sua última venda, como o produto não tem vendas ele tem valor de 0 R$
-
----
-
-**Dica:** Antes de rodar o `seed.py`, certifique-se de que os caminhos dos arquivos CSV no script estão apontando corretamente para a pasta `../csv-database-files/`.
+- **Somente Leitura**: Apenas comandos SELECT são permitidos.
+- **Busca de Distintos**: É obrigatório checar valores reais antes de aplicar filtros de texto.
+- **Limitação de Output**: Consultas exploratórias são limitadas a 30 linhas para evitar sobrecarga.
+- **Uso do list_tables e outras ferramentas**: O agente não recebe o schema completo do banco de dados, invés disso ele recebe a lista de tabelas e precisa usar as ferramentas passadas para gerar o SQL, isso evita que o agente confiante demais com sua resposta e seja mais "curioso"
+- **Criação do judge-agent**: Foi criando um agente secundário para julgar e avaliar as respostas do agente principal, mas o limite de tokens tornou ele inviável de ser usado.
