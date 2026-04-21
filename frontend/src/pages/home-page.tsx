@@ -75,7 +75,7 @@ export const HomePage = () => {
               id="category-filter"
               value={selectedCategory}
               onChange={handleCategoryChange}
-              className="bg-[#111] text-white border border-zinc-800 rounded px-3 py-2 focus:outline-none focus:border-(--color-primary) min-w-[200px]"
+              className="bg-[#111] text-white border border-zinc-800 rounded px-3 py-2 focus:outline-none focus:border-(--color-primary) min-w-50"
             >
               <option value="">Todas as Categorias</option>
               {CATEGORIES_DATA.filter(c => c.value !== "").map((cat) => (

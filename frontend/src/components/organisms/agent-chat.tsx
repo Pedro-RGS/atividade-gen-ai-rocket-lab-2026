@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send } from "lucide-react";
+import { MessageSquare, X, Send, Loader2 } from "lucide-react";
 import axios from "axios";
 
 type Message = {
@@ -12,10 +12,19 @@ const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
+const loadingMessages = [
+  "Analisando sua pergunta...",
+  "Explorando o banco de dados...",
+  "Cruzando os dados de produtos...",
+  "Formatando os resultados...",
+  "Quase lá...",
+];
+
 export function AgentChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false)
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [chatLog, setChatLog] = useState<Message[]>([
     {
       id: 1,
@@ -31,6 +40,25 @@ export function AgentChat() {
       mensagensEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatLog, isOpen]);
+
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval>;
+
+    if (isLoading) {
+      setLoadingMessageIndex(0);
+
+      intervalId = setInterval(() => {
+        setLoadingMessageIndex((prevIndex) => {
+          if (prevIndex < loadingMessages.length - 1) {
+            return prevIndex + 1;
+          }
+          return prevIndex;
+        });
+      }, 2500);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [isLoading]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,6 +144,16 @@ export function AgentChat() {
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-zinc-800 text-zinc-400 rounded-2xl rounded-bl-none border border-zinc-700 px-4 py-2 text-sm flex items-center gap-2">
+                  <Loader2 size={14} className="animate-spin" />
+                  <span className="animate-pulse">
+                    {loadingMessages[loadingMessageIndex]}
+                  </span>
+                </div>
+              </div>
+            )}
             <div ref={mensagensEndRef} />
           </div>
 
