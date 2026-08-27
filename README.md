@@ -1,4 +1,4 @@
-# Atividade Gen Ai Rocket Lab 2026
+# E-commerce integrado com agente Text2SQL. 
 Esse repositório contém a integração entre a minha plataforma fullstack de compras online e meu agente de ia __Text-To-SQL__. O agente permite que o usuário faça perguntas em linguagem natural sobre o banco de dados e receba respostas baseadas em consultas SQL exeutadas em tempo real.
 
 ---
